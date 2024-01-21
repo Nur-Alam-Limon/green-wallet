@@ -1,0 +1,27 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+name = "green-wallet"
+client_id = "4db8a6f6f28b5412e76099678cb119c7"
+application_url = "https://along-julia-samba-parameters.trycloudflare.com"
+embedded = true
+
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = "write_products"
+
+[auth]
+redirect_urls = [
+  "https://along-julia-samba-parameters.trycloudflare.com/auth/callback",
+  "https://along-julia-samba-parameters.trycloudflare.com/auth/shopify/callback",
+  "https://along-julia-samba-parameters.trycloudflare.com/api/auth/callback"
+]
+
+[webhooks]
+api_version = "2024-01"
+
+[pos]
+embedded = false
+
+[build]
+automatically_update_urls_on_dev = true
+dev_store_url = "green-wallet-test.myshopify.com"
