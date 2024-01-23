@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { json } from "@remix-run/node";
-import { useActionData, useSubmit } from "@remix-run/react";
+import { useActionData, useLoaderData, useSubmit } from "@remix-run/react";
 import {
   Page,
   Card,
@@ -14,16 +14,48 @@ import { authenticate } from "../shopify.server";
 import axios from "axios";
 
 export const loader = async ({ request }) => {
-  await authenticate.admin(request);
+    const { admin } = await authenticate.admin(request);
 
-  return null;
+    const response = await admin.graphql(
+      `query ($namespace: String!, $key: String!) {
+          shop {
+          metafield(namespace: $namespace, key: $key) {
+            value
+          }
+        }
+        }`,
+      {
+        variables: {
+          namespace: "green-wallet",
+            key: "discount",
+        },
+      }
+    );
+    const responseJson = await response.json();
+    console.log("Response JSON", responseJson);
+    const data = responseJson.data.shop;
+    console.log("Data", data);
+    return json({ data });
 };
 
 export const action = async ({ request }) => {
   const { admin, session } = await authenticate.admin(request);
-  let formData = await request.formData();
-  formData = formData.get("data");
+  let body = await request.formData();
+  let formData = body.get("data");
+  let existRules = body.get("existRules")
   formData = JSON.parse(formData);
+  existRules = JSON.parse(existRules);
+
+  console.log("Exist Rules", existRules);
+
+  existRules.push({
+    tokenQuantity: formData?.tokens,
+    discountCode: formData?.discountName,
+  })
+
+  existRules.sort((a, b) => parseInt(b.tokenQuantity) - parseInt(a.tokenQuantity));
+
+  console.log("Exist Rules2", existRules);
 
   console.log("FormData", formData);
 
@@ -102,16 +134,14 @@ export const action = async ({ request }) => {
   if (
     responseJson?.data?.discountCodeBasicCreate?.codeDiscountNode?.codeDiscount
   ) {
+    
     const dataNew = await axios.post(
       `https://${session.shop}/admin/api/2024-01/metafields.json`,
       {
         metafield: {
           namespace: "green-wallet",
           key: "discount",
-          value: JSON.stringify({
-            tokenQuantity: formData?.tokens,
-            discountCode: formData?.discountName,
-          }),
+          value: JSON.stringify(existRules),
           type: "json",
         },
       },
@@ -133,6 +163,8 @@ export const action = async ({ request }) => {
 };
 
 export default function DiscountConfig() {
+    const loaderData = useLoaderData();
+    const [existRules, setExisRules] = useState([]);
   const actionData = useActionData();
   const submit = useSubmit();
   const discountCreate = actionData?.discount;
@@ -142,6 +174,20 @@ export default function DiscountConfig() {
   const [tokens, setTokens] = useState(0);
   const [discount, setDiscount] = useState(0);
   const [error, setError] = useState(false);
+
+  useEffect(() => {
+    if (loaderData?.data?.metafield?.value === undefined) {
+      console.log(loaderData, "loaderData is undefined");
+    } else {
+      const existingRulesData = JSON.parse(
+        loaderData?.data?.metafield?.value
+      );
+      console.log("Loader", existingRulesData);
+
+      setExisRules(existingRulesData);
+      // console.log(existingRulesData?.rules);
+    }
+  }, [loaderData]);
 
   useEffect(() => {
     if (discountCreate?.codeDiscountNode) {
@@ -179,6 +225,7 @@ export default function DiscountConfig() {
             tokens: tokens,
             discount: discount,
           }),
+          existRules: JSON.stringify(existRules)
         },
         { replace: true, method: "POST" }
       );
@@ -192,10 +239,7 @@ export default function DiscountConfig() {
         content: "Back",
         url: "/app",
       }}
-      primaryAction={{
-        content: "Save",
-        onAction: handleSave,
-      }}
+      
     >
       <Layout>
         <Layout.Section>
@@ -240,7 +284,7 @@ export default function DiscountConfig() {
                   </p>
                 )}
 
-                <Button submit>Create Discount</Button>
+                <Button variant="primary" submit>Create Discount</Button>
               </FormLayout>
             </Form>
           </Card>
