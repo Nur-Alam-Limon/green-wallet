@@ -2,18 +2,18 @@
 
 name = "green-wallet"
 client_id = "4db8a6f6f28b5412e76099678cb119c7"
-application_url = "https://ext-tourist-installation-elect.trycloudflare.com"
+application_url = "https://showtimes-tiger-rooms-electricity.trycloudflare.com"
 embedded = true
 
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
-scopes = "write_products"
+scopes = "write_discounts, read_discounts, read_products, write_products"
 
 [auth]
 redirect_urls = [
-  "https://ext-tourist-installation-elect.trycloudflare.com/auth/callback",
-  "https://ext-tourist-installation-elect.trycloudflare.com/auth/shopify/callback",
-  "https://ext-tourist-installation-elect.trycloudflare.com/api/auth/callback"
+  "https://showtimes-tiger-rooms-electricity.trycloudflare.com/auth/callback",
+  "https://showtimes-tiger-rooms-electricity.trycloudflare.com/auth/shopify/callback",
+  "https://showtimes-tiger-rooms-electricity.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
