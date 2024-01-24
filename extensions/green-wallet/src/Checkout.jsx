@@ -16,8 +16,9 @@ import {
   BlockLayout,
   Heading,
   Text,
+  useAppMetafields,
 } from "@shopify/ui-extensions-react/checkout";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 export default reactExtension("purchase.checkout.block.render", () => (
   <Extension />
@@ -27,14 +28,74 @@ function Extension() {
   const [email, setEmail] = useState("");
   const [pass, setPass] = useState("");
   const [step, setStep] = useState(1);
+  const [load, setLoad] = useState(false);
+  const [code, setCode] = useState("");
+  const [metaValue, setMetaValue] = useState([]);
+  const [token, setToken] = useState(0);
+
+  const meta = useAppMetafields({namespace : "green-wallet" ,key : "discount"});
+
+  console.log("meta", meta[0]?.metafield?.value);
+
+  useEffect(()=>{
+    async function setRules(){
+      if(meta.length>0 && metaValue.length==0){
+        let x=JSON.parse(meta[0]?.metafield?.value);
+        setMetaValue(x);
+      }
+    }
+    setRules();
+  },[meta])
 
   function handleForm() {
     console.log("hello");
     setStep(2);
   }
 
-  function handleToken(){
-    console.log('Token');
+  function handleToken() {
+    setLoad(true);
+    var retryCount = 0;
+    var maxRetries = 5;
+    var retryInterval = 5000; // 5 seconds
+
+
+    function attemptRetry() {
+      if (retryCount < maxRetries) {
+        console.log("Retrying...");
+        retryCount++;
+        setTimeout(handleToken, retryInterval);
+      } else {
+        console.log("Exceeded maximum retry attempts");
+        setLoad(false);
+        setCode("No Discount Code found");
+        setStep(3);
+      }
+    }
+
+    console.log("Token", metaValue);
+
+    if (metaValue.length > 0) {
+      console.log("csasacs", metaValue, typeof metaValue);
+
+      for (var i = 0; i < metaValue.length; i++) {
+        var obj = metaValue[i];
+
+        console.log("dsvsdv", parseInt(token), obj);
+
+        if (parseInt(token) <= parseInt(obj.tokenQuantity)) {
+          console.log("Condition met for object:", obj);
+          setCode(obj.discountCode);
+          // Perform additional actions if needed
+          break; // Exit the loop when the condition is met
+        }
+      }
+    } else {
+      console.log("hello112");
+      // Retry if metaValue is empty
+      attemptRetry();
+      return;
+    }
+
     setStep(3);
   }
 
@@ -54,25 +115,34 @@ function Extension() {
                 <TextField onChange={(val)=> setPass(val)} label="Enter your Password" required />
               </View>
             <BlockSpacer spacing="base" />
-            <Button accessibilityRole="submit" spacing="base">Submit</Button>
+            <Button appearance="monochrome" accessibilityRole="submit" spacing="base">Submit</Button>
             </View>
           </Form> : step==2 ?
           <View>
-            <TextBlock>Congratulations! You have in total 550 Tokens.</TextBlock>
+            <Text emphasis="bold" size="large">Congratulations! You have in total 550 Tokens.</Text>
             <BlockSpacer spacing="base" />
             <View>
               <Form onSubmit={() => handleToken()}>
               <TextField onChange={(val)=> setPass(val)} label="Enter how many tokens you want to use" required />
               <BlockSpacer spacing="base" />
-              <Button accessibilityRole="submit" spacing="base">Submit</Button>
+              <Button appearance="monochrome" loading={load} accessibilityRole="submit" spacing="base">Submit</Button>
               </Form>
             </View>
           </View>
-           : <View>
-            <Heading>Promo Code: "DISCOUNT25"</Heading>
+           : <>{code && 
+           <View inlineAlignment="center">
             <BlockSpacer spacing="base" />
-            <Text>Use Promo Code "Discount25" to get $10 Off.</Text>
+            <Heading>Promo Code: </Heading>
+            <BlockSpacer spacing="base" />
+            <Heading>{code}</Heading>
+            <BlockSpacer spacing="base" />
+            <BlockSpacer spacing="base" />
+            <Text>Use Promo Code "{code}" to get $10 Off.</Text>
+            <BlockSpacer spacing="base" />
            </View>
+           
+           }
+           </>
           }
         </Popover>
       }

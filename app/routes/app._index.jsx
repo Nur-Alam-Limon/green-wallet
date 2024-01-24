@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import { json, useLoaderData } from "@remix-run/react";
 import { Page, Card, Layout, Text, DataTable } from "@shopify/polaris";
 import { authenticate } from "../shopify.server";
+import indexStyles from "~/styles/main.css";
+
+export const links = () => [{ rel: "stylesheet", href: indexStyles }];
 
 export const loader = async ({ request }) => {
   const { admin } = await authenticate.admin(request);
@@ -91,8 +94,8 @@ function ExistingRules({ discountRules }) {
           <Card>
             {discountRules?.length > 0 ? (
                 <>
-                  <Text as="h2" variant="headingMd">
-                    Existing Upsell Rules
+                  <Text as="h2" variant="headingLg">
+                    Existing Discount Rules
                   </Text>
                   <DiscountRulesTable data={discountRules} />
                 </>

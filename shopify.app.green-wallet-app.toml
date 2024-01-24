@@ -1,0 +1,27 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+name = "green-wallet-app"
+client_id = "8a836175da40536e65b7fcc6b5fa4e10"
+application_url = "https://healthy-around-entitled-cigarette.trycloudflare.com"
+embedded = true
+
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = "write_discounts,read_discounts,read_products,write_products"
+
+[auth]
+redirect_urls = [
+  "https://healthy-around-entitled-cigarette.trycloudflare.com/auth/callback",
+  "https://healthy-around-entitled-cigarette.trycloudflare.com/auth/shopify/callback",
+  "https://healthy-around-entitled-cigarette.trycloudflare.com/api/auth/callback"
+]
+
+[webhooks]
+api_version = "2024-01"
+
+[pos]
+embedded = false
+
+[build]
+automatically_update_urls_on_dev = true
+dev_store_url = "green-wallet-test.myshopify.com"
