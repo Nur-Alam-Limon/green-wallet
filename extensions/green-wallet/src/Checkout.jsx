@@ -111,14 +111,15 @@ function Extension() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            email: "lisben@yopmail.com",
-            password: "Test@123",
+            email: email,
+            password: pass,
           }),
         }
       );
 
       const data = await response.json();
-      setUser(true);
+      setUser(data?.ok);
+      if(data?.ok) setGetToken(parseInt(data?.result?.tokens));
       console.log("Fetch data call Green", data);
       setLoadForm(false);
       setStep(2);
@@ -217,7 +218,7 @@ function Extension() {
               {user ? (
                 <View>
                   <Text emphasis="bold" size="large">
-                    Congratulations! You have in total 550 Tokens.
+                    Congratulations! You have in total {getToken} Tokens.
                   </Text>
                   <BlockSpacer spacing="base" />
                   <View>

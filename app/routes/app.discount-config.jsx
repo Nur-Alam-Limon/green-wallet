@@ -230,6 +230,10 @@ export default function DiscountConfig() {
         { replace: true, method: "POST" }
       );
     } else setError(true);
+    setTitle("");
+    setDiscountName("");
+    setTokens(0);
+    setDiscount(0);
   }
 
   return (

@@ -2,7 +2,7 @@
 
 name = "green-wallet-app"
 client_id = "8a836175da40536e65b7fcc6b5fa4e10"
-application_url = "https://restrict-geek-vocal-chemistry.trycloudflare.com"
+application_url = "https://quilt-explicitly-batch-highland.trycloudflare.com"
 embedded = true
 
 [access_scopes]
@@ -11,9 +11,9 @@ scopes = "write_discounts,read_discounts,read_products,write_products"
 
 [auth]
 redirect_urls = [
-  "https://restrict-geek-vocal-chemistry.trycloudflare.com/auth/callback",
-  "https://restrict-geek-vocal-chemistry.trycloudflare.com/auth/shopify/callback",
-  "https://restrict-geek-vocal-chemistry.trycloudflare.com/api/auth/callback"
+  "https://quilt-explicitly-batch-highland.trycloudflare.com/auth/callback",
+  "https://quilt-explicitly-batch-highland.trycloudflare.com/auth/shopify/callback",
+  "https://quilt-explicitly-batch-highland.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
