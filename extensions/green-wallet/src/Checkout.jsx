@@ -1,19 +1,14 @@
 import {
   Banner,
   useApi,
-  useTranslate,
   reactExtension,
   Pressable,
   Popover,
   View,
-  TextBlock,
   Form,
-  Grid,
   BlockSpacer,
   Button,
   TextField,
-  GridItem,
-  BlockLayout,
   Heading,
   Text,
   useAppMetafields,
@@ -24,7 +19,7 @@ export default reactExtension("purchase.checkout.block.render", () => (
   <Extension />
 ));
 
-// const orderAppUrl='https://que-presentation-magnitude-adopted.trycloudflare.com';
+const orderAppUrl='https://bus-remains-poster-donors.trycloudflare.com';
 
 function Extension() {
   const [email, setEmail] = useState("");
@@ -39,37 +34,39 @@ function Extension() {
   const [user, setUser] = useState(false);
   const [err, setErr] = useState(false);
 
-  // const fetchData = async () => {
-  //   try {
-  //     const response = await fetch(
-  //       `https://corsproxy.io/?${orderAppUrl}/app/extension?token=12`,
-  //       {
-  //         method: "get",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //       }
-  //     );
+  const { shop } = useApi();
 
-  //     if (!response.ok) {
-  //       throw new Error("Network response was not ok");
-  //     }
+  const fetchData = async () => {
+    try {
+      const response = await fetch(
+        `https://corsproxy.io/?${orderAppUrl}/app/extension?val=12&shop=${shop.myshopifyDomain}`,
+        {
+          method: "get",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
-  //     const data = await response.json();
-  //     console.log("Fetch data call", data);
+      if (!response.ok) {
+        throw new Error("Network response was not ok");
+      }
 
-  //   } catch (err) {
-  //     console.error("Error fetching", err);
-  //   }
-  // };
+      const data = await response.json();
+      console.log("Fetch data call", data);
+
+    } catch (err) {
+      console.error("Error fetching", err);
+    }
+  };
 
   const meta = useAppMetafields({ namespace: "green-wallet", key: "discount" });
 
   console.log("meta", meta[0]?.metafield?.value);
 
-  // useEffect(()=>{
-  //   fetchData();
-  // },[])
+  useEffect(()=>{
+    fetchData();
+  },[])
 
   useEffect(() => {
     async function setRules() {
