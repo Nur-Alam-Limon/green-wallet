@@ -12,6 +12,7 @@ import {
   Heading,
   Text,
   useAppMetafields,
+  useApplyDiscountCodeChange,
 } from "@shopify/ui-extensions-react/checkout";
 import { useEffect, useState } from "react";
 
@@ -19,7 +20,7 @@ export default reactExtension("purchase.checkout.block.render", () => (
   <Extension />
 ));
 
-const orderAppUrl='https://bus-remains-poster-donors.trycloudflare.com';
+const orderAppUrl='https://myself-should-marked-efforts.trycloudflare.com';
 
 function Extension() {
   const [email, setEmail] = useState("");
@@ -33,6 +34,8 @@ function Extension() {
   const [loadForm, setLoadForm] = useState(false);
   const [user, setUser] = useState(false);
   const [err, setErr] = useState(false);
+
+  const applyDiscountCodeChange = useApplyDiscountCodeChange();
 
   const { shop } = useApi();
 
@@ -124,13 +127,16 @@ function Extension() {
     }
   }
 
+  var retryCount = 0;
+    var maxRetries = 3;
+    var retryInterval = 3000; // 5 seconds
+
   async function handleToken() {
     setLoad(true);
-    var retryCount = 0;
-    var maxRetries = 5;
-    var retryInterval = 5000; // 5 seconds
+    
 
     function attemptRetry() {
+      console.log("Retry", retryCount, maxRetries, code);
       if (retryCount < maxRetries) {
         console.log("Retrying...");
         retryCount++;
@@ -138,7 +144,7 @@ function Extension() {
       } else {
         console.log("Exceeded maximum retry attempts");
         setLoad(false);
-        setCode("No Discount Code found");
+        setCode("");
         setStep(3);
       }
     }
@@ -153,7 +159,7 @@ function Extension() {
 
         console.log("dsvsdv", parseInt(token), obj);
 
-        if (parseInt(token) <= parseInt(obj.tokenQuantity)) {
+        if (parseInt(token) >= parseInt(obj.tokenQuantity)) {
           console.log("Condition met for object:", obj);
           await fetchData(obj.discountAmount);
           // Perform additional actions if needed
@@ -166,11 +172,23 @@ function Extension() {
       attemptRetry();
       return;
     }
-
+    setLoad(false);
     setStep(3);
+    
+  }
+
+  function discountApply() {
+    // Create a DiscountCodeAddChange or DiscountCodeRemoveChange object
+  const discountCodeChange = {
+    type: "addDiscountCode", // or "removeDiscountCode" based on your needs
+    code: code,
+  };
+    applyDiscountCodeChange(discountCodeChange)
   }
 
   return (
+    <>
+    { metaValue.length==0 ? <></> :
     <Pressable
       cornerRadius="base"
       minInlineSize="fill"
@@ -211,6 +229,7 @@ function Extension() {
             <>
               {user ? (
                 <View>
+                  <BlockSpacer spacing="base" />
                   <Text emphasis="bold" size="large">
                     Congratulations! You have in total {getToken} Tokens.
                   </Text>
@@ -218,7 +237,7 @@ function Extension() {
                   <View>
                     <Form onSubmit={() => handleToken()}>
                       <TextField
-                        onChange={(val) => setPass(val)}
+                        onChange={(val) => setToken(val)}
                         label="Enter how many tokens you want to use"
                         required
                       />
@@ -231,6 +250,7 @@ function Extension() {
                       >
                         Submit
                       </Button>
+                      <BlockSpacer spacing="base" />
                     </Form>
                   </View>
                 </View>
@@ -246,6 +266,15 @@ function Extension() {
                   </Text>
                   <BlockSpacer spacing="base" />
                   <BlockSpacer spacing="base" />
+                  <Button
+                    to="https://www.google.com/"
+                    inlineAlignment="center"
+                    external="true"
+                    appearance="monochrome"
+                  >
+                    Create account in green-wallet
+                  </Button>
+                  <BlockSpacer spacing="base" />
                 </View>
               )}
             </>
@@ -258,18 +287,36 @@ function Extension() {
                   <BlockSpacer spacing="base" />
                   <Heading>{code}</Heading>
                   <BlockSpacer spacing="base" />
-                  <BlockSpacer spacing="base" />
+                  
                   <Text>Use Promo Code "{code}" to get discount.</Text>
+                  <BlockSpacer spacing="base" />
+                  <Button
+                    inlineAlignment="center"
+                    appearance="monochrome"
+                    onPress={()=>discountApply()}
+                  >
+                    Apply Discount
+                  </Button>
                   <BlockSpacer spacing="base" />
                 </View>) : (<View inlineAlignment="center">
                   <BlockSpacer spacing="base" />
                   <BlockSpacer spacing="base" />
-                  <Heading>Sorry! No discount code found.</Heading>
+                  <Heading>Sorry!</Heading>
+                  <BlockSpacer spacing="base" />
+                  <Heading>No discount code found.</Heading>
+                  <BlockSpacer spacing="base" />
                   <BlockSpacer spacing="base" />
                   <Text>
-                    Kindly try again.
+                    Kindly try again with more tokens.
                   </Text>
                   <BlockSpacer spacing="base" />
+                  <Button
+                    inlineAlignment="center"
+                    appearance="monochrome"
+                    onPress={()=>setStep(step-1)}
+                  >
+                    Go Back
+                  </Button>
                   <BlockSpacer spacing="base" />
                 </View>
               )}
@@ -283,5 +330,7 @@ function Extension() {
         title="Click here to get discounts from green-wallet."
       />
     </Pressable>
+}
+    </>
   );
 }

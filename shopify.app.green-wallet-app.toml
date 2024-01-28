@@ -2,7 +2,7 @@
 
 name = "green-wallet-app"
 client_id = "8a836175da40536e65b7fcc6b5fa4e10"
-application_url = "https://bus-remains-poster-donors.trycloudflare.com"
+application_url = "https://myself-should-marked-efforts.trycloudflare.com"
 embedded = true
 
 [access_scopes]
@@ -11,9 +11,9 @@ scopes = "write_discounts,read_discounts,read_products,write_products"
 
 [auth]
 redirect_urls = [
-  "https://bus-remains-poster-donors.trycloudflare.com/auth/callback",
-  "https://bus-remains-poster-donors.trycloudflare.com/auth/shopify/callback",
-  "https://bus-remains-poster-donors.trycloudflare.com/api/auth/callback"
+  "https://myself-should-marked-efforts.trycloudflare.com/auth/callback",
+  "https://myself-should-marked-efforts.trycloudflare.com/auth/shopify/callback",
+  "https://myself-should-marked-efforts.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
