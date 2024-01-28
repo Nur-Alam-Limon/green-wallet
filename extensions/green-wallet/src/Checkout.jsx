@@ -36,10 +36,10 @@ function Extension() {
 
   const { shop } = useApi();
 
-  const fetchData = async () => {
+  const fetchData = async (val) => {
     try {
       const response = await fetch(
-        `https://corsproxy.io/?${orderAppUrl}/app/extension?val=12&shop=${shop.myshopifyDomain}`,
+        `https://corsproxy.io/?${orderAppUrl}/app/extension?val=${val}&shop=${shop.myshopifyDomain}&num=2`,
         {
           method: "get",
           headers: {
@@ -54,6 +54,7 @@ function Extension() {
 
       const data = await response.json();
       console.log("Fetch data call", data);
+      setCode(data?.data);
 
     } catch (err) {
       console.error("Error fetching", err);
@@ -63,10 +64,6 @@ function Extension() {
   const meta = useAppMetafields({ namespace: "green-wallet", key: "discount" });
 
   console.log("meta", meta[0]?.metafield?.value);
-
-  useEffect(()=>{
-    fetchData();
-  },[])
 
   useEffect(() => {
     async function setRules() {
@@ -127,7 +124,7 @@ function Extension() {
     }
   }
 
-  function handleToken() {
+  async function handleToken() {
     setLoad(true);
     var retryCount = 0;
     var maxRetries = 5;
@@ -158,7 +155,7 @@ function Extension() {
 
         if (parseInt(token) <= parseInt(obj.tokenQuantity)) {
           console.log("Condition met for object:", obj);
-          setCode(obj.discountCode);
+          await fetchData(obj.discountAmount);
           // Perform additional actions if needed
           break; // Exit the loop when the condition is met
         }
@@ -254,7 +251,7 @@ function Extension() {
             </>
           ) : (
             <>
-              {code && (
+              {code ? (
                 <View inlineAlignment="center">
                   <BlockSpacer spacing="base" />
                   <Heading>Promo Code: </Heading>
@@ -263,6 +260,16 @@ function Extension() {
                   <BlockSpacer spacing="base" />
                   <BlockSpacer spacing="base" />
                   <Text>Use Promo Code "{code}" to get discount.</Text>
+                  <BlockSpacer spacing="base" />
+                </View>) : (<View inlineAlignment="center">
+                  <BlockSpacer spacing="base" />
+                  <BlockSpacer spacing="base" />
+                  <Heading>Sorry! No discount code found.</Heading>
+                  <BlockSpacer spacing="base" />
+                  <Text>
+                    Kindly try again.
+                  </Text>
+                  <BlockSpacer spacing="base" />
                   <BlockSpacer spacing="base" />
                 </View>
               )}

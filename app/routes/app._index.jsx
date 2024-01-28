@@ -57,7 +57,7 @@ function DiscountRulesTable ({ data }) {
   const rows = [];
   data?.forEach((item) => {
     const MinToken=item.tokenQuantity;
-    const discountCode=item.discountCode;
+    const discountCode=item.discountAmount+' %';
     
 
     rows.push([MinToken, discountCode]);
@@ -68,7 +68,7 @@ function DiscountRulesTable ({ data }) {
       columnContentTypes={["text", "text"]}
       headings={[
         "Min Token Quantity",
-        "Discount Code",
+        "Discount Percentage",
       ]}
       rows={rows}
     />
@@ -80,7 +80,7 @@ function ExistingRules({ discountRules }) {
     <Page
       title="Green Wallet App"
       primaryAction={{
-        content: "Add New Discount",
+        content: "Add New Discount Rule",
         url: "/app/discount-config",
       }}
       // secondaryActions={
