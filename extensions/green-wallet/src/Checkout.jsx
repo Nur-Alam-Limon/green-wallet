@@ -23,7 +23,8 @@ export default reactExtension("purchase.checkout.block.render", () => (
   <Extension />
 ));
 
-const orderAppUrl = "https://colleges-may-duncan-superior.trycloudflare.com";
+const orderAppUrl =
+  "https://loads-venue-tap-millennium.trycloudflare.com";
 
 function Extension() {
   const [email, setEmail] = useState("");
@@ -132,6 +133,17 @@ function Extension() {
   var maxRetries = 3;
   var retryInterval = 3000; // 5 seconds
 
+  function calculateDiscountPercentage(tokens, conversionRate) {
+    let discountPercentage = tokens * conversionRate;
+    console.log("Discoint", discountPercentage)
+
+    // Ensure the discount doesn't exceed 100%
+    discountPercentage = Math.min(discountPercentage, 100);
+    console.log("Discoint12", discountPercentage)
+
+    return discountPercentage;
+  }
+
   async function handleToken() {
     setLoad(true);
 
@@ -154,18 +166,19 @@ function Extension() {
     if (metaValue.length > 0) {
       console.log("csasacs", metaValue, typeof metaValue);
 
-      for (var i = 0; i < metaValue.length; i++) {
-        var obj = metaValue[i];
+      var obj = metaValue[0];
 
-        console.log("dsvsdv", parseInt(token), obj);
+      console.log("dsvsdv", parseInt(token), obj);
 
-        if (parseInt(token) >= parseInt(obj.tokenQuantity)) {
-          console.log("Condition met for object:", obj);
-          await fetchData(obj.discountAmount);
-          // Perform additional actions if needed
-          break; // Exit the loop when the condition is met
-        }
-      }
+      let y = calculateDiscountPercentage(
+        parseInt(token),
+        parseFloat(obj.discountAmount)
+      );
+
+      console.log("UUUU",y);
+
+
+      await fetchData(y);
     } else {
       console.log("hello112");
       // Retry if metaValue is empty
@@ -196,9 +209,9 @@ function Extension() {
           overlay={
             <Popover minInlineSize={400} position="inlineEnd" padding="loose">
               <View inlineAlignment="center">
-              <Image source="https://cdn.shopify.com/s/files/1/0635/0965/9788/files/rsz_rsz_whatsapp_image_2024-01-29_at_34350_pm-removebg-preview.png?v=1706596425" />
-            </View>
-            <BlockSpacer spacing="base" />
+                <Image source="https://cdn.shopify.com/s/files/1/0635/0965/9788/files/rsz_rsz_whatsapp_image_2024-01-29_at_34350_pm-removebg-preview.png?v=1706596425" />
+              </View>
+              <BlockSpacer spacing="base" />
               {step == 1 ? (
                 <Form onSubmit={() => handleForm()}>
                   <View>
@@ -237,7 +250,6 @@ function Extension() {
                 <>
                   {user ? (
                     <View>
-                      
                       <Text emphasis="bold" size="large">
                         Congratulations! You have in total {getToken} Tokens.
                       </Text>
@@ -264,7 +276,6 @@ function Extension() {
                     </View>
                   ) : (
                     <View inlineAlignment="center">
-                      
                       <Heading>Sorry! You are not a valid user.</Heading>
                       <BlockSpacer spacing="base" />
                       <Text>
@@ -279,7 +290,7 @@ function Extension() {
                         external="true"
                         appearance="monochrome"
                       >
-                        Create account in green-wallet
+                        Create account in Green Wallets
                       </Button>
                       <BlockSpacer spacing="base" />
                     </View>
@@ -289,7 +300,6 @@ function Extension() {
                 <>
                   {code ? (
                     <View inlineAlignment="center">
-                      
                       <Heading>Promo Code: </Heading>
                       <BlockSpacer spacing="base" />
                       <Heading>{code}</Heading>
@@ -308,11 +318,10 @@ function Extension() {
                     </View>
                   ) : (
                     <View inlineAlignment="center">
-                      
                       <Heading>Sorry!</Heading>
                       <BlockSpacer spacing="base" />
                       <Heading>No discount code found.</Heading>
-                      
+
                       <BlockSpacer spacing="base" />
                       <Text>Kindly try again with more tokens.</Text>
                       <BlockSpacer spacing="base" />
@@ -332,9 +341,9 @@ function Extension() {
           }
         >
           <Banner
-        status="success"
-        title="Click here to get discounts from green-wallet."
-      />
+            status="success"
+            title="Click here to get discounts from Green Wallets."
+          />
         </Pressable>
       )}
     </>

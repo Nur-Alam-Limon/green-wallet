@@ -129,13 +129,15 @@ export default function DiscountConfig() {
   function handleSave() {
     console.log("Fields", tokens, discount);
     if (tokens && discount) {
+      let newToken=1;
+      let newDiscount=discount/tokens;
       submit(
         {
           data: JSON.stringify({
-            tokens: tokens,
-            discount: discount,
+            tokens: newToken,
+            discount: newDiscount,
           }),
-          existRules: JSON.stringify(existRules),
+          existRules: JSON.stringify([]),
         },
         { replace: true, method: "POST" }
       );
@@ -146,7 +148,7 @@ export default function DiscountConfig() {
 
   return (
     <Page
-      title="Create Discount Rule"
+      title="Create Discount Conversion Rule"
       backAction={{
         content: "Back",
         url: "/app",
@@ -160,8 +162,9 @@ export default function DiscountConfig() {
                 <TextField
                   value={tokens}
                   onChange={handleTokenChange}
-                  label="Min number of tokens"
+                  label="Number of tokens"
                   type="number"
+                  
                   // helpText={
                   //   <span>
                   //     We’ll use this email address to inform you on future changes to
@@ -185,7 +188,7 @@ export default function DiscountConfig() {
                 )}
 
                 <Button variant="primary" submit>
-                  Create Discount Rule
+                  Create Discount Conversion Rule
                 </Button>
               </FormLayout>
             </Form>

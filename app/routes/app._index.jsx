@@ -67,7 +67,7 @@ function DiscountRulesTable ({ data }) {
     <DataTable
       columnContentTypes={["text", "text"]}
       headings={[
-        "Min Token Quantity",
+        "Token Quantity",
         "Discount Percentage",
       ]}
       rows={rows}
@@ -78,9 +78,9 @@ function DiscountRulesTable ({ data }) {
 function ExistingRules({ discountRules }) {
   return (
     <Page
-      title="Green Wallet App"
+      title="Green Wallets App"
       primaryAction={{
-        content: "Add New Discount Rule",
+        content: "Add New Discount Conversion Rate",
         url: "/app/discount-config",
       }}
       // secondaryActions={
@@ -95,13 +95,13 @@ function ExistingRules({ discountRules }) {
             {discountRules?.length > 0 ? (
                 <>
                   <Text as="h2" variant="headingLg">
-                    Existing Discount Rules
+                    Discount Conversion Rate
                   </Text>
                   <DiscountRulesTable data={discountRules} />
                 </>
               ) : (
             <Text as="h2" variant="headingMd">
-              No Discount rules Found!
+              No Discount conversion rules Found!
             </Text>
             )}
           </Card>

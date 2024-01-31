@@ -1,8 +1,8 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
-name = "green-wallet-app"
+name = "Green Wallets"
 client_id = "8a836175da40536e65b7fcc6b5fa4e10"
-application_url = "https://colleges-may-duncan-superior.trycloudflare.com"
+application_url = "https://expenditures-districts-were-metallica.trycloudflare.com"
 embedded = true
 
 [access_scopes]
@@ -11,9 +11,9 @@ scopes = "write_discounts,read_discounts,read_products,write_products"
 
 [auth]
 redirect_urls = [
-  "https://colleges-may-duncan-superior.trycloudflare.com/auth/callback",
-  "https://colleges-may-duncan-superior.trycloudflare.com/auth/shopify/callback",
-  "https://colleges-may-duncan-superior.trycloudflare.com/api/auth/callback"
+  "https://expenditures-districts-were-metallica.trycloudflare.com/auth/callback",
+  "https://expenditures-districts-were-metallica.trycloudflare.com/auth/shopify/callback",
+  "https://expenditures-districts-were-metallica.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
