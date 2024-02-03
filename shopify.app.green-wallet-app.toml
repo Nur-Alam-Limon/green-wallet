@@ -2,7 +2,7 @@
 
 name = "Green Wallets"
 client_id = "8a836175da40536e65b7fcc6b5fa4e10"
-application_url = "https://expenditures-districts-were-metallica.trycloudflare.com"
+application_url = "https://nur-test.in.ngrok.io"
 embedded = true
 
 [access_scopes]
@@ -11,9 +11,9 @@ scopes = "write_discounts,read_discounts,read_products,write_products"
 
 [auth]
 redirect_urls = [
-  "https://expenditures-districts-were-metallica.trycloudflare.com/auth/callback",
-  "https://expenditures-districts-were-metallica.trycloudflare.com/auth/shopify/callback",
-  "https://expenditures-districts-were-metallica.trycloudflare.com/api/auth/callback"
+  "https://nur-test.in.ngrok.io/auth/callback",
+  "https://nur-test.in.ngrok.io/auth/shopify/callback",
+  "https://nur-test.in.ngrok.io/api/auth/callback"
 ]
 
 [webhooks]

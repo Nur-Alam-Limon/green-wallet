@@ -15,6 +15,7 @@ import {
   useApplyDiscountCodeChange,
   Image,
   InlineLayout,
+  Link,
 } from "@shopify/ui-extensions-react/checkout";
 import { TextBlock } from "@shopify/ui-extensions/checkout";
 import { useEffect, useState } from "react";
@@ -24,7 +25,7 @@ export default reactExtension("purchase.checkout.block.render", () => (
 ));
 
 const orderAppUrl =
-  "https://loads-venue-tap-millennium.trycloudflare.com";
+  "https://nur-test.in.ngrok.io";
 
 function Extension() {
   const [email, setEmail] = useState("");
@@ -170,9 +171,11 @@ function Extension() {
 
       console.log("dsvsdv", parseInt(token), obj);
 
+      let newDiscount=parseFloat(obj.discountAmount)/parseFloat(obj.tokenQuantity)
+
       let y = calculateDiscountPercentage(
         parseInt(token),
-        parseFloat(obj.discountAmount)
+        parseFloat(newDiscount)
       );
 
       console.log("UUUU",y);
@@ -230,6 +233,12 @@ function Extension() {
                       />
                     </View>
                     <BlockSpacer spacing="base" />
+                    <Text>
+                    
+                      Not a user? <Link to="https://staging.greenwallets.ai/signup" appearance="monochrome">Sign Up
+                    </Link>
+                    </Text>
+                    <BlockSpacer spacing="base" />
                     {err && (
                       <Text appearance="critical">
                         Kindly provide correct email and pass.
@@ -285,7 +294,7 @@ function Extension() {
                       <BlockSpacer spacing="base" />
                       <BlockSpacer spacing="base" />
                       <Button
-                        to="https://staging.greenwallets.ai/"
+                        to="https://staging.greenwallets.ai/signup"
                         inlineAlignment="center"
                         external="true"
                         appearance="monochrome"

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { json } from "@remix-run/node";
-import { useActionData, useLoaderData, useSubmit } from "@remix-run/react";
+import { useActionData, useLoaderData, useNavigate, useSubmit } from "@remix-run/react";
 import {
   Page,
   Card,
@@ -94,6 +94,7 @@ export default function DiscountConfig() {
   const actionData = useActionData();
   const submit = useSubmit();
   const discountCreate = actionData?.rules;
+  const navigate = useNavigate();
 
   const [tokens, setTokens] = useState(0);
   const [discount, setDiscount] = useState(0);
@@ -113,7 +114,9 @@ export default function DiscountConfig() {
 
   useEffect(() => {
     if (discountCreate?.metafield) {
+      navigate('/app')
       shopify.toast.show("Discount Rule created");
+      
     } 
   }, [discountCreate]);
 
@@ -129,13 +132,11 @@ export default function DiscountConfig() {
   function handleSave() {
     console.log("Fields", tokens, discount);
     if (tokens && discount) {
-      let newToken=1;
-      let newDiscount=discount/tokens;
       submit(
         {
           data: JSON.stringify({
-            tokens: newToken,
-            discount: newDiscount,
+            tokens: tokens,
+            discount: discount,
           }),
           existRules: JSON.stringify([]),
         },

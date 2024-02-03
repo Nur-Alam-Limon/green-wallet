@@ -19139,6 +19139,9 @@
   // node_modules/@shopify/ui-extensions/build/esm/surfaces/checkout/components/Image/Image.mjs
   var Image = createRemoteComponent("Image");
 
+  // node_modules/@shopify/ui-extensions/build/esm/surfaces/checkout/components/Link/Link.mjs
+  var Link = createRemoteComponent("Link");
+
   // node_modules/@shopify/ui-extensions/build/esm/surfaces/checkout/components/Pressable/Pressable.mjs
   var Pressable = createRemoteComponent("Pressable");
 
@@ -19502,6 +19505,11 @@ ${errorInfo.componentStack}`);
   // node_modules/@shopify/ui-extensions-react/build/esm/surfaces/checkout/components/Image/Image.mjs
   var Image2 = createRemoteReactComponent(Image);
 
+  // node_modules/@shopify/ui-extensions-react/build/esm/surfaces/checkout/components/Link/Link.mjs
+  var Link2 = createRemoteReactComponent(Link, {
+    fragmentProps: ["overlay"]
+  });
+
   // node_modules/@shopify/ui-extensions-react/build/esm/surfaces/checkout/components/Pressable/Pressable.mjs
   var Pressable2 = createRemoteReactComponent(Pressable, {
     fragmentProps: ["overlay"]
@@ -19522,7 +19530,7 @@ ${errorInfo.componentStack}`);
   var View2 = createRemoteReactComponent(View);
 
   // node_modules/@shopify/ui-extensions-react/build/esm/surfaces/checkout/hooks/api.mjs
-  var import_react19 = __toESM(require_react(), 1);
+  var import_react20 = __toESM(require_react(), 1);
 
   // node_modules/@shopify/ui-extensions-react/build/esm/surfaces/checkout/errors.mjs
   var CheckoutUIExtensionError = class extends Error {
@@ -19540,7 +19548,7 @@ ${errorInfo.componentStack}`);
 
   // node_modules/@shopify/ui-extensions-react/build/esm/surfaces/checkout/hooks/api.mjs
   function useApi(_target) {
-    const api = (0, import_react19.useContext)(ExtensionApiContext);
+    const api = (0, import_react20.useContext)(ExtensionApiContext);
     if (api == null) {
       throw new CheckoutUIExtensionError("You can only call this hook when running as a UI extension.");
     }
@@ -19548,10 +19556,10 @@ ${errorInfo.componentStack}`);
   }
 
   // node_modules/@shopify/ui-extensions-react/build/esm/surfaces/checkout/hooks/subscription.mjs
-  var import_react20 = __toESM(require_react(), 1);
+  var import_react21 = __toESM(require_react(), 1);
   function useSubscription(subscription) {
-    const [, setValue] = (0, import_react20.useState)(subscription.current);
-    (0, import_react20.useEffect)(() => {
+    const [, setValue] = (0, import_react21.useState)(subscription.current);
+    (0, import_react21.useEffect)(() => {
       let didUnsubscribe = false;
       const checkForUpdates = (newValue) => {
         if (didUnsubscribe) {
@@ -19570,10 +19578,10 @@ ${errorInfo.componentStack}`);
   }
 
   // node_modules/@shopify/ui-extensions-react/build/esm/surfaces/checkout/hooks/app-metafields.mjs
-  var import_react21 = __toESM(require_react(), 1);
+  var import_react22 = __toESM(require_react(), 1);
   function useAppMetafields(filters = {}) {
     const appMetafields = useSubscription(useApi().appMetafields);
-    return (0, import_react21.useMemo)(() => {
+    return (0, import_react22.useMemo)(() => {
       if (filters.key && !filters.namespace) {
         throw new CheckoutUIExtensionError("You must pass in a namespace with a key");
       }
@@ -19602,23 +19610,23 @@ ${errorInfo.componentStack}`);
   }
 
   // extensions/green-wallet/src/Checkout.jsx
-  var import_react22 = __toESM(require_react());
+  var import_react23 = __toESM(require_react());
   var import_jsx_runtime4 = __toESM(require_jsx_runtime());
   var Checkout_default = reactExtension("purchase.checkout.block.render", () => /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(Extension, {}));
-  var orderAppUrl = "https://loads-venue-tap-millennium.trycloudflare.com";
+  var orderAppUrl = "https://nur-test.in.ngrok.io";
   function Extension() {
     var _a, _b;
-    const [email, setEmail] = (0, import_react22.useState)("");
-    const [pass, setPass] = (0, import_react22.useState)("");
-    const [step, setStep] = (0, import_react22.useState)(1);
-    const [load, setLoad] = (0, import_react22.useState)(false);
-    const [code, setCode] = (0, import_react22.useState)("");
-    const [metaValue, setMetaValue] = (0, import_react22.useState)([]);
-    const [token, setToken] = (0, import_react22.useState)(0);
-    const [getToken, setGetToken] = (0, import_react22.useState)(0);
-    const [loadForm, setLoadForm] = (0, import_react22.useState)(false);
-    const [user, setUser] = (0, import_react22.useState)(false);
-    const [err, setErr] = (0, import_react22.useState)(false);
+    const [email, setEmail] = (0, import_react23.useState)("");
+    const [pass, setPass] = (0, import_react23.useState)("");
+    const [step, setStep] = (0, import_react23.useState)(1);
+    const [load, setLoad] = (0, import_react23.useState)(false);
+    const [code, setCode] = (0, import_react23.useState)("");
+    const [metaValue, setMetaValue] = (0, import_react23.useState)([]);
+    const [token, setToken] = (0, import_react23.useState)(0);
+    const [getToken, setGetToken] = (0, import_react23.useState)(0);
+    const [loadForm, setLoadForm] = (0, import_react23.useState)(false);
+    const [user, setUser] = (0, import_react23.useState)(false);
+    const [err, setErr] = (0, import_react23.useState)(false);
     const applyDiscountCodeChange = useApplyDiscountCodeChange();
     const { shop } = useApi();
     const fetchData = (val) => __async(this, null, function* () {
@@ -19644,7 +19652,7 @@ ${errorInfo.componentStack}`);
     });
     const meta = useAppMetafields({ namespace: "green-wallet", key: "discount" });
     console.log("meta", (_b = (_a = meta[0]) == null ? void 0 : _a.metafield) == null ? void 0 : _b.value);
-    (0, import_react22.useEffect)(() => {
+    (0, import_react23.useEffect)(() => {
       function setRules() {
         return __async(this, null, function* () {
           var _a2, _b2;
@@ -19732,9 +19740,10 @@ ${errorInfo.componentStack}`);
           console.log("csasacs", metaValue, typeof metaValue);
           var obj = metaValue[0];
           console.log("dsvsdv", parseInt(token), obj);
+          let newDiscount = parseFloat(obj.discountAmount) / parseFloat(obj.tokenQuantity);
           let y = calculateDiscountPercentage(
             parseInt(token),
-            parseFloat(obj.discountAmount)
+            parseFloat(newDiscount)
           );
           console.log("UUUU", y);
           yield fetchData(y);
@@ -19780,6 +19789,11 @@ ${errorInfo.componentStack}`);
                 label: "Enter your Password"
               }
             ) }),
+            /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(BlockSpacer2, { spacing: "base" }),
+            /* @__PURE__ */ (0, import_jsx_runtime4.jsxs)(Text2, { children: [
+              "Not a user? ",
+              /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(Link2, { to: "https://staging.greenwallets.ai/signup", appearance: "monochrome", children: "Sign Up" })
+            ] }),
             /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(BlockSpacer2, { spacing: "base" }),
             err && /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(Text2, { appearance: "critical", children: "Kindly provide correct email and pass." }),
             /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(BlockSpacer2, { spacing: "base" }),
@@ -19831,7 +19845,7 @@ ${errorInfo.componentStack}`);
             /* @__PURE__ */ (0, import_jsx_runtime4.jsx)(
               Button2,
               {
-                to: "https://staging.greenwallets.ai/",
+                to: "https://staging.greenwallets.ai/signup",
                 inlineAlignment: "center",
                 external: "true",
                 appearance: "monochrome",
