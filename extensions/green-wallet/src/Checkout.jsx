@@ -16,6 +16,7 @@ import {
   Image,
   InlineLayout,
   Link,
+  Modal,
 } from "@shopify/ui-extensions-react/checkout";
 import { TextBlock } from "@shopify/ui-extensions/checkout";
 import { useEffect, useState } from "react";
@@ -42,7 +43,7 @@ function Extension() {
 
   const applyDiscountCodeChange = useApplyDiscountCodeChange();
 
-  const { shop } = useApi();
+  const { shop,ui } = useApi();
 
   const fetchData = async (val) => {
     try {
@@ -94,8 +95,6 @@ function Extension() {
 
     let testEmail = emailRegex.test(email);
 
-    console.log("Test Email", testEmail);
-
     if (!testEmail) {
       setErr(true);
       setLoadForm(false);
@@ -136,11 +135,9 @@ function Extension() {
 
   function calculateDiscountPercentage(tokens, conversionRate) {
     let discountPercentage = tokens * conversionRate;
-    console.log("Discoint", discountPercentage)
 
     // Ensure the discount doesn't exceed 100%
     discountPercentage = Math.min(discountPercentage, 100);
-    console.log("Discoint12", discountPercentage)
 
     return discountPercentage;
   }
@@ -149,27 +146,19 @@ function Extension() {
     setLoad(true);
 
     function attemptRetry() {
-      console.log("Retry", retryCount, maxRetries, code);
       if (retryCount < maxRetries) {
-        console.log("Retrying...");
         retryCount++;
         setTimeout(handleToken, retryInterval);
       } else {
-        console.log("Exceeded maximum retry attempts");
         setLoad(false);
         setCode("");
         setStep(3);
       }
     }
 
-    console.log("Token", metaValue);
-
     if (metaValue.length > 0) {
-      console.log("csasacs", metaValue, typeof metaValue);
 
       var obj = metaValue[0];
-
-      console.log("dsvsdv", parseInt(token), obj);
 
       let newDiscount=parseFloat(obj.discountAmount)/parseFloat(obj.tokenQuantity)
 
@@ -178,12 +167,9 @@ function Extension() {
         parseFloat(newDiscount)
       );
 
-      console.log("UUUU",y);
-
 
       await fetchData(y);
     } else {
-      console.log("hello112");
       // Retry if metaValue is empty
       attemptRetry();
       return;
@@ -199,6 +185,7 @@ function Extension() {
       code: code,
     };
     applyDiscountCodeChange(discountCodeChange);
+    ui.overlay.close('my-modal')
   }
 
   return (
@@ -210,143 +197,155 @@ function Extension() {
           cornerRadius="base"
           minInlineSize="fill"
           overlay={
-            <Popover minInlineSize={400} position="inlineEnd" padding="loose">
-              <View inlineAlignment="center">
-                <Image source="https://cdn.shopify.com/s/files/1/0635/0965/9788/files/rsz_rsz_whatsapp_image_2024-01-29_at_34350_pm-removebg-preview.png?v=1706596425" />
-              </View>
-              <BlockSpacer spacing="base" />
-              {step == 1 ? (
-                <Form onSubmit={() => handleForm()}>
-                  <View>
+            // <Popover minInlineSize={400} position="inlineEnd" padding="loose">  
+              <Modal
+                id="my-modal"
+                padding
+                title=""
+              >
+                <View inlineAlignment="center">
+                  <Image source="https://cdn.shopify.com/s/files/1/0635/0965/9788/files/rsz_whatsapp_image_2024-01-29_at_34350_pm-removebg-preview.png?v=1706983021" />
+                </View>
+                
+                {step == 1 ? (
+                  <View padding="extraLoose">
+                  <Form onSubmit={() => handleForm()}>
                     <View>
-                      <TextField
-                        onChange={(val) => setEmail(val)}
-                        label="Enter your Email"
-                        type="email"
-                      />
-                    </View>
-                    <BlockSpacer spacing="base" />
-                    <View>
-                      <TextField
-                        onChange={(val) => setPass(val)}
-                        label="Enter your Password"
-                      />
-                    </View>
-                    <BlockSpacer spacing="base" />
-                    <Text>
-                    
-                      Not a user? <Link to="https://staging.greenwallets.ai/signup" appearance="monochrome">Sign Up
-                    </Link>
-                    </Text>
-                    <BlockSpacer spacing="base" />
-                    {err && (
-                      <Text appearance="critical">
-                        Kindly provide correct email and pass.
-                      </Text>
-                    )}
-                    <BlockSpacer spacing="base" />
-                    <Button
-                      loading={loadForm}
-                      appearance="monochrome"
-                      accessibilityRole="submit"
-                      spacing="base"
-                    >
-                      Submit
-                    </Button>
-                  </View>
-                </Form>
-              ) : step == 2 ? (
-                <>
-                  {user ? (
-                    <View>
-                      <Text emphasis="bold" size="large">
-                        Congratulations! You have in total {getToken} Tokens.
-                      </Text>
+                      <View>
+                        <TextField
+                          onChange={(val) => setEmail(val)}
+                          label="Enter your Email"
+                          type="email"
+                        />
+                      </View>
                       <BlockSpacer spacing="base" />
                       <View>
-                        <Form onSubmit={() => handleToken()}>
-                          <TextField
-                            onChange={(val) => setToken(val)}
-                            label="Enter how many tokens you want to use"
-                            required
-                          />
-                          <BlockSpacer spacing="base" />
-                          <Button
-                            appearance="monochrome"
-                            loading={load}
-                            accessibilityRole="submit"
-                            spacing="base"
-                          >
-                            Submit
-                          </Button>
-                          <BlockSpacer spacing="base" />
-                        </Form>
+                        <TextField
+                          onChange={(val) => setPass(val)}
+                          label="Enter your Password"
+                        />
                       </View>
-                    </View>
-                  ) : (
-                    <View inlineAlignment="center">
-                      <Heading>Sorry! You are not a valid user.</Heading>
                       <BlockSpacer spacing="base" />
                       <Text>
-                        Kindly put the email and password correctly to avail the
-                        discount.
+                        Not a user?{" "}
+                        <Link
+                          to="https://staging.greenwallets.ai/signup"
+                          appearance="monochrome"
+                        >
+                          Sign Up
+                        </Link>
                       </Text>
                       <BlockSpacer spacing="base" />
+                      {err && (
+                        <Text appearance="critical">
+                          Kindly provide correct email and pass.
+                        </Text>
+                      )}
                       <BlockSpacer spacing="base" />
                       <Button
-                        to="https://staging.greenwallets.ai/signup"
-                        inlineAlignment="center"
-                        external="true"
+                        loading={loadForm}
                         appearance="monochrome"
+                        accessibilityRole="submit"
+                        spacing="base"
                       >
-                        Create account in Green Wallets
+                        Submit
                       </Button>
-                      <BlockSpacer spacing="base" />
                     </View>
-                  )}
-                </>
-              ) : (
-                <>
-                  {code ? (
-                    <View inlineAlignment="center">
-                      <Heading>Promo Code: </Heading>
-                      <BlockSpacer spacing="base" />
-                      <Heading>{code}</Heading>
-                      <BlockSpacer spacing="base" />
+                  </Form>
+                  </View>
+                ) : step == 2 ? (
+                  <>
+                    {user ? (
+                      <View padding="extraLoose">
+                        <Text emphasis="bold" size="large">
+                          Congratulations! You have in total {getToken} Tokens.
+                        </Text>
+                        <BlockSpacer spacing="base" />
+                        <View>
+                          <Form onSubmit={() => handleToken()}>
+                            <TextField
+                              onChange={(val) => setToken(val)}
+                              label="Enter how many tokens you want to use"
+                              required
+                            />
+                            <BlockSpacer spacing="base" />
+                            <Button
+                              appearance="monochrome"
+                              loading={load}
+                              accessibilityRole="submit"
+                              spacing="base"
+                            >
+                              Submit
+                            </Button>
+                            <BlockSpacer spacing="base" />
+                          </Form>
+                        </View>
+                      </View>
+                    ) : (
+                      <View padding="extraLoose" inlineAlignment="center">
+                        <Heading>Sorry! You are not a valid user.</Heading>
+                        <BlockSpacer spacing="base" />
+                        <Text>
+                          Kindly put the email and password correctly to avail
+                          the discount.
+                        </Text>
+                        <BlockSpacer spacing="base" />
+                        <BlockSpacer spacing="base" />
+                        <Button
+                          to="https://staging.greenwallets.ai/signup"
+                          inlineAlignment="center"
+                          external="true"
+                          appearance="monochrome"
+                        >
+                          Create account in Green Wallets
+                        </Button>
+                        <BlockSpacer spacing="base" />
+                      </View>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    {code ? (
+                      <View padding="extraLoose" inlineAlignment="center">
+                        <Heading>Promo Code: </Heading>
+                        <BlockSpacer spacing="base" />
+                        <Heading>{code}</Heading>
+                        <BlockSpacer spacing="base" />
 
-                      <Text>Use Promo Code "{code}" to get discount.</Text>
-                      <BlockSpacer spacing="base" />
-                      <Button
-                        inlineAlignment="center"
-                        appearance="monochrome"
-                        onPress={() => discountApply()}
-                      >
-                        Apply Discount
-                      </Button>
-                      <BlockSpacer spacing="base" />
-                    </View>
-                  ) : (
-                    <View inlineAlignment="center">
-                      <Heading>Sorry!</Heading>
-                      <BlockSpacer spacing="base" />
-                      <Heading>No discount code found.</Heading>
+                        <Text>Use Promo Code "{code}" to get discount.</Text>
+                        <BlockSpacer spacing="base" />
+                        <Button
+                          inlineAlignment="center"
+                          appearance="monochrome"
+                          onPress={() => discountApply()}
+                        >
+                          Apply Discount
+                        </Button>
+                        <BlockSpacer spacing="base" />
+                      </View>
+                    ) : (
+                      <View padding="extraLoose" inlineAlignment="center">
+                        <Heading>Sorry!</Heading>
+                        <BlockSpacer spacing="base" />
+                        <Heading>No discount code found.</Heading>
 
-                      <BlockSpacer spacing="base" />
-                      <Text>Kindly try again with more tokens.</Text>
-                      <BlockSpacer spacing="base" />
-                      <Button
-                        inlineAlignment="center"
-                        appearance="monochrome"
-                        onPress={() => setStep(step - 1)}
-                      >
-                        Go Back
-                      </Button>
-                      <BlockSpacer spacing="base" />
-                    </View>
-                  )}
-                </>
-              )}
-            </Popover>
+                        <BlockSpacer spacing="base" />
+                        <Text>Kindly try again with more tokens.</Text>
+                        <BlockSpacer spacing="base" />
+                        <Button
+                          inlineAlignment="center"
+                          appearance="monochrome"
+                          onPress={() => setStep(step - 1)}
+                        >
+                          Go Back
+                        </Button>
+                        <BlockSpacer spacing="base" />
+                      </View>
+                    )}
+                  </>
+                )}
+                {/* </Popover> */}
+              </Modal>
           }
         >
           <Banner
