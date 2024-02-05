@@ -26,7 +26,7 @@ export default reactExtension("purchase.checkout.block.render", () => (
 ));
 
 const orderAppUrl =
-  "https://nur-test.in.ngrok.io";
+  "https://shopify.greenwallets.ai";
 
 function Extension() {
   const [email, setEmail] = useState("");
