@@ -18,3 +18,13 @@
     padding-top: 10px !important;
     font-weight: 600 !important;
 }
+.text{
+    font-size: 15px;
+    line-height: 25px;
+}
+
+.app-block-btn .Polaris-Button--variantPrimary{
+    padding: 5px 20px;
+    margin: 0 auto;
+    margin-top: 10px;
+}
