@@ -3,7 +3,6 @@ import {
   useApi,
   reactExtension,
   Pressable,
-  Popover,
   View,
   Form,
   BlockSpacer,
@@ -14,19 +13,16 @@ import {
   useAppMetafields,
   useApplyDiscountCodeChange,
   Image,
-  InlineLayout,
   Link,
   Modal,
 } from "@shopify/ui-extensions-react/checkout";
-import { TextBlock } from "@shopify/ui-extensions/checkout";
 import { useEffect, useState } from "react";
 
 export default reactExtension("purchase.checkout.block.render", () => (
   <Extension />
 ));
 
-const orderAppUrl =
-  "https://shopify.greenwallets.ai";
+const orderAppUrl = "https://shopify.greenwallets.ai";
 
 function Extension() {
   const [email, setEmail] = useState("");
@@ -35,6 +31,8 @@ function Extension() {
   const [load, setLoad] = useState(false);
   const [code, setCode] = useState("");
   const [metaValue, setMetaValue] = useState([]);
+  const [merchID, setMerchID] = useState("");
+  const [userID, setUserID] = useState("");
   const [token, setToken] = useState(0);
   const [getToken, setGetToken] = useState(0);
   const [loadForm, setLoadForm] = useState(false);
@@ -43,7 +41,7 @@ function Extension() {
 
   const applyDiscountCodeChange = useApplyDiscountCodeChange();
 
-  const { shop,ui } = useApi();
+  const { shop, ui } = useApi();
 
   const fetchData = async (val) => {
     try {
@@ -64,6 +62,41 @@ function Extension() {
       const data = await response.json();
       console.log("Fetch data call", data);
       setCode(data?.data);
+      console.log(
+        "Trabs Body",
+        merchID,
+        JSON.stringify({
+          user_id: userID,
+          merch_account: merchID?.id,
+          tokens: token,
+          merch_website: "https://thedisruptlabs.com",
+          discount_code: data?.data,
+          percent_discount: val,
+        })
+      );
+      if (data.data) {
+        const response2 = await fetch(
+          `https://corsproxy.io/?https://api.staging.greenwallets.ai/api/shopify/transaction`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              user_id: userID,
+              merch_account: merchID?.id,
+              tokens: parseInt(token),
+              merch_website: "https://thedisruptlabs.com",
+              discount_code: data?.data,
+              percent_discount: val,
+            }),
+          }
+        );
+
+        const data2 = await response2.json();
+
+        console.log("Transaction API response", data2);
+      }
     } catch (err) {
       console.error("Error fetching", err);
     }
@@ -71,7 +104,12 @@ function Extension() {
 
   const meta = useAppMetafields({ namespace: "green-wallet", key: "discount" });
 
-  console.log("meta", meta[0]?.metafield?.value);
+  const metaMerch = useAppMetafields({
+    namespace: "green-wallet",
+    key: "merchantid",
+  });
+
+  console.log("meta", metaMerch[0]?.metafield?.value);
 
   useEffect(() => {
     async function setRules() {
@@ -82,6 +120,16 @@ function Extension() {
     }
     setRules();
   }, [meta]);
+
+  useEffect(() => {
+    async function setID() {
+      if (metaMerch.length > 0 && merchID.length == 0) {
+        let x = JSON.parse(metaMerch[0]?.metafield?.value);
+        setMerchID(x);
+      }
+    }
+    setID();
+  }, [metaMerch]);
 
   async function handleForm() {
     setLoadForm(true);
@@ -118,6 +166,7 @@ function Extension() {
 
       const data = await response.json();
       setUser(data?.ok);
+      setUserID(data?.result?.id);
       if (data?.ok) setGetToken(parseInt(data?.result?.tokens));
       console.log("Fetch data call Green", data);
       setLoadForm(false);
@@ -157,16 +206,15 @@ function Extension() {
     }
 
     if (metaValue.length > 0) {
-
       var obj = metaValue[0];
 
-      let newDiscount=parseFloat(obj.discountAmount)/parseFloat(obj.tokenQuantity)
+      let newDiscount =
+        parseFloat(obj.discountAmount) / parseFloat(obj.tokenQuantity);
 
       let y = calculateDiscountPercentage(
         parseInt(token),
         parseFloat(newDiscount)
       );
-
 
       await fetchData(y);
     } else {
@@ -185,7 +233,7 @@ function Extension() {
       code: code,
     };
     applyDiscountCodeChange(discountCodeChange);
-    ui.overlay.close('my-modal')
+    ui.overlay.close("my-modal");
   }
 
   return (
@@ -197,18 +245,14 @@ function Extension() {
           cornerRadius="base"
           minInlineSize="fill"
           overlay={
-            // <Popover minInlineSize={400} position="inlineEnd" padding="loose">  
-              <Modal
-                id="my-modal"
-                padding
-                title=""
-              >
-                <View inlineAlignment="center">
-                  <Image source="https://cdn.shopify.com/s/files/1/0635/0965/9788/files/rsz_whatsapp_image_2024-01-29_at_34350_pm-removebg-preview.png?v=1706983021" />
-                </View>
-                
-                {step == 1 ? (
-                  <View padding="extraLoose">
+            // <Popover minInlineSize={400} position="inlineEnd" padding="loose">
+            <Modal id="my-modal" padding title="">
+              <View inlineAlignment="center">
+                <Image source="https://cdn.shopify.com/s/files/1/0635/0965/9788/files/rsz_whatsapp_image_2024-01-29_at_34350_pm-removebg-preview.png?v=1706983021" />
+              </View>
+
+              {step == 1 ? (
+                <View padding="extraLoose">
                   <Form onSubmit={() => handleForm()}>
                     <View>
                       <View>
@@ -252,100 +296,100 @@ function Extension() {
                       </Button>
                     </View>
                   </Form>
-                  </View>
-                ) : step == 2 ? (
-                  <>
-                    {user ? (
-                      <View padding="extraLoose">
-                        <Text emphasis="bold" size="large">
-                          Congratulations! You have in total {getToken} Tokens.
-                        </Text>
-                        <BlockSpacer spacing="base" />
-                        <View>
-                          <Form onSubmit={() => handleToken()}>
-                            <TextField
-                              onChange={(val) => setToken(val)}
-                              label="Enter how many tokens you want to use"
-                              required
-                            />
-                            <BlockSpacer spacing="base" />
-                            <Button
-                              appearance="monochrome"
-                              loading={load}
-                              accessibilityRole="submit"
-                              spacing="base"
-                            >
-                              Submit
-                            </Button>
-                            <BlockSpacer spacing="base" />
-                          </Form>
-                        </View>
+                </View>
+              ) : step == 2 ? (
+                <>
+                  {user ? (
+                    <View padding="extraLoose">
+                      <Text emphasis="bold" size="large">
+                        Congratulations! You have in total {getToken} Tokens.
+                      </Text>
+                      <BlockSpacer spacing="base" />
+                      <View>
+                        <Form onSubmit={() => handleToken()}>
+                          <TextField
+                            onChange={(val) => setToken(val)}
+                            label="Enter how many tokens you want to use"
+                            required
+                          />
+                          <BlockSpacer spacing="base" />
+                          <Button
+                            appearance="monochrome"
+                            loading={load}
+                            accessibilityRole="submit"
+                            spacing="base"
+                          >
+                            Submit
+                          </Button>
+                          <BlockSpacer spacing="base" />
+                        </Form>
                       </View>
-                    ) : (
-                      <View padding="extraLoose" inlineAlignment="center">
-                        <Heading>Sorry! You are not a valid user.</Heading>
-                        <BlockSpacer spacing="base" />
-                        <Text>
-                          Kindly put the email and password correctly to avail
-                          the discount.
-                        </Text>
-                        <BlockSpacer spacing="base" />
-                        <BlockSpacer spacing="base" />
-                        <Button
-                          to="https://staging.greenwallets.ai/signup"
-                          inlineAlignment="center"
-                          external="true"
-                          appearance="monochrome"
-                        >
-                          Create account in Green Wallets
-                        </Button>
-                        <BlockSpacer spacing="base" />
-                      </View>
-                    )}
-                  </>
-                ) : (
-                  <>
-                    {code ? (
-                      <View padding="extraLoose" inlineAlignment="center">
-                        <Heading>Promo Code: </Heading>
-                        <BlockSpacer spacing="base" />
-                        <Heading>{code}</Heading>
-                        <BlockSpacer spacing="base" />
+                    </View>
+                  ) : (
+                    <View padding="extraLoose" inlineAlignment="center">
+                      <Heading>Sorry! You are not a valid user.</Heading>
+                      <BlockSpacer spacing="base" />
+                      <Text>
+                        Kindly put the email and password correctly to avail the
+                        discount.
+                      </Text>
+                      <BlockSpacer spacing="base" />
+                      <BlockSpacer spacing="base" />
+                      <Button
+                        to="https://staging.greenwallets.ai/signup"
+                        inlineAlignment="center"
+                        external="true"
+                        appearance="monochrome"
+                      >
+                        Create account in Green Wallets
+                      </Button>
+                      <BlockSpacer spacing="base" />
+                    </View>
+                  )}
+                </>
+              ) : (
+                <>
+                  {code ? (
+                    <View padding="extraLoose" inlineAlignment="center">
+                      <Heading>Promo Code: </Heading>
+                      <BlockSpacer spacing="base" />
+                      <Heading>{code}</Heading>
+                      <BlockSpacer spacing="base" />
 
-                        <Text>Use Promo Code "{code}" to get discount.</Text>
-                        <BlockSpacer spacing="base" />
-                        <Button
-                          inlineAlignment="center"
-                          appearance="monochrome"
-                          onPress={() => discountApply()}
-                        >
-                          Apply Discount
-                        </Button>
-                        <BlockSpacer spacing="base" />
-                      </View>
-                    ) : (
-                      <View padding="extraLoose" inlineAlignment="center">
-                        <Heading>Sorry!</Heading>
-                        <BlockSpacer spacing="base" />
-                        <Heading>No discount code found.</Heading>
+                      <Text>Use Promo Code "{code}" to get discount.</Text>
+                      <BlockSpacer spacing="base" />
+                      <Button
+                        inlineAlignment="center"
+                        appearance="monochrome"
+                        onPress={() => discountApply()}
+                      >
+                        Apply Discount
+                      </Button>
+                      <BlockSpacer spacing="base" />
+                    </View>
+                  ) : (
+                    <View padding="extraLoose" inlineAlignment="center">
+                      <Heading>Sorry!</Heading>
+                      <BlockSpacer spacing="base" />
+                      <Heading>No discount code found.</Heading>
 
-                        <BlockSpacer spacing="base" />
-                        <Text>Kindly try again with more tokens.</Text>
-                        <BlockSpacer spacing="base" />
-                        <Button
-                          inlineAlignment="center"
-                          appearance="monochrome"
-                          onPress={() => setStep(step - 1)}
-                        >
-                          Go Back
-                        </Button>
-                        <BlockSpacer spacing="base" />
-                      </View>
-                    )}
-                  </>
-                )}
-                {/* </Popover> */}
-              </Modal>
+                      <BlockSpacer spacing="base" />
+                      <Text>Kindly try again with more tokens.</Text>
+                      <BlockSpacer spacing="base" />
+                      <Button
+                        inlineAlignment="center"
+                        appearance="monochrome"
+                        onPress={() => setStep(step - 1)}
+                      >
+                        Go Back
+                      </Button>
+                      <BlockSpacer spacing="base" />
+                    </View>
+                  )}
+                </>
+              )}
+              {/* </Popover> */}
+            </Modal>
           }
         >
           <Banner
