@@ -35,4 +35,9 @@
 
 li {
     font-weight: 400;
+    font-size: 14px;
+}
+
+.link {
+    margin: 15px 0 5px;
 }

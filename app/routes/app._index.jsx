@@ -208,19 +208,33 @@ function ExistingRules({ discountRules, value, setValue }) {
                 Add App Block
               </Button>
             </div>
+            <div className="link">
+              <a href="https://youtu.be/rlS0ie4Y7jc" target="blank">Watch the video for step-by-step instructions</a>
+            </div>
           </Card>
         </Layout.Section>
         <Layout.Section>
           <Card>
-            <div className="text">
+          <div className="text">
+            <Text as="h2" variant="headingLg">
+              Put your Merchant ID here and hit save. Follow the steps to get merchant ID:
+            </Text>
+            <ol>
+                <li>
+                Login to your Greenwallets account.
+                </li>
+                <li>
+                For the laptop/desktop screen, find the “Accounts” button on the left sidebar. If using a cellphone click hamburger button and then click the “Accounts” button.
+                </li>
+                <li>You will see a QR code and a public key, copy that public key paste it in the input box below, and click save.</li>
+            </ol>
               <TextField
-                label="Put your Merchant ID here and hit save"
+                label=""
                 value={value}
                 onChange={handleChange}
                 autoComplete="off"
               />
             </div>
-            <p style={{ padding: "5px 0 2px", fontWeight:'400'}}>Kindly visit greenwallets.com to find your merchant id</p>
             <div className="app-block-btn">
               <Button
                 size="large"
@@ -229,6 +243,9 @@ function ExistingRules({ discountRules, value, setValue }) {
               >
                 Save
               </Button>
+            </div>
+            <div className="link">
+              <a href="https://youtu.be/AepDgszDtbw" target="blank">Watch the video for step-by-step instructions</a>
             </div>
           </Card>
         </Layout.Section>
