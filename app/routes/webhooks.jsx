@@ -19,8 +19,11 @@ export const action = async ({ request }) => {
 
       break;
     case "CUSTOMERS_DATA_REQUEST":
+      return json({ message: "ok" }, { status: 200 });
     case "CUSTOMERS_REDACT":
+      return json({ message: "ok" }, { status: 200 });
     case "SHOP_REDACT":
+      return json({ message: "ok" }, { status: 200 });
     default:
       throw new Response("Unhandled webhook topic", { status: 404 });
   }
